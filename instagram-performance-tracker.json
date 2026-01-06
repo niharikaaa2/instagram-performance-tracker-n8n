@@ -1,0 +1,214 @@
+{
+  "name": "My workflow 4",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// If raw body is ON, the data is in $json.body\nconst item = $json.body || $json;\n\nreturn [\n  {\n    post_id: item.post_id,\n    views: Number(item.views),\n    likes: Number(item.likes),\n    comments: Number(item.comments),\n    shares: Number(item.shares),\n    saves: Number(item.saves),\n    engagement_rate:\n      item.views > 0\n        ? (((Number(item.likes) + Number(item.comments) + Number(item.shares) + Number(item.saves)) / Number(item.views)) * 100).toFixed(2)\n        : 0,\n    viral:\n      (((Number(item.likes) + Number(item.comments) + Number(item.shares) + Number(item.saves)) / Number(item.views)) * 100) >= 10\n        ? \"YES\"\n        : \"NO\",\n    date: new Date().toISOString().split(\"T\")[0]\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        16
+      ],
+      "id": "e0dd0dfa-8460-4186-8b2b-a4c5a98bfe35",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1YxULK4TC7OfnvY2Wr0fTEqxuqAC9GZVwx_LPfIQ0Zck",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Instagram Performance Tracker",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "date": "={{ $now.toISODate() }}",
+            "post_id": "={{$json.post_id}}",
+            "views": "={{$json.views}}",
+            "likes": "={{$json.likes}}",
+            " comments": "={{$json.comments}}",
+            "shares": "={{$json.shares}}",
+            "saves": "={{$json.saves}}",
+            "engagement_rate": "={{$json.engagement_rate}}",
+            "viral": "={{$json.viral}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "post_id",
+              "displayName": "post_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "views",
+              "displayName": "views",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "likes",
+              "displayName": "likes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": " comments",
+              "displayName": " comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "shares",
+              "displayName": "shares",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "saves",
+              "displayName": "saves",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "engagement_rate",
+              "displayName": "engagement_rate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "viral",
+              "displayName": "viral",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        624,
+        0
+      ],
+      "id": "afbc31a4-70eb-4abb-ab2f-b3683fd672fc",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleApi": {
+          "id": "cpKJdx99yJ0eaHM3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "instagram-performance",
+        "options": {
+          "rawBody": true,
+          "responseData": "First Incoming Item"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "9d670a92-bc17-4312-91f7-f34c71f1061b",
+      "name": "Webhook",
+      "webhookId": "e2370fea-5b27-4450-926c-adce4bebff6b"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "fec165d8-9255-40db-ab6c-365808cf3b37",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "60d10024382aaee06c7f5289a7f7e3a576f54d591f021ce2134f9f140c7214b7"
+  },
+  "id": "6vm8qDCReuen1i28QEoAB",
+  "tags": []
+}
